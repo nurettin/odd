@@ -5,7 +5,7 @@ require "pusher-client"
 require_relative "../../lib/finance/io/candle_stream"
 
 set :server, "thin"
-set :bind, "nurett.in"
+set :bind, "0.0.0.0"
 set :sockets, []
 candle_stream1= Finance::IO::CandleStream.start(60) do |row|
   puts "output: #{row}"
