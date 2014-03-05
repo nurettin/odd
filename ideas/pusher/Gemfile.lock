@@ -1,0 +1,14 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    pusher-client (0.4.0)
+      websocket (~> 1.0.0)
+    websocket (1.0.7)
+    websocket-native (1.0.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  pusher-client
+  websocket-native
