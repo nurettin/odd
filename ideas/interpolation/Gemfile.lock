@@ -1,0 +1,10 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    interpolator (0.15)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  interpolator
