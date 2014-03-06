@@ -33,11 +33,9 @@ get "/" do
   else
     request.websocket do |ws|
       ws.onopen do
-        ws.send("Baglandi!")
         settings.sockets << ws
       end
       ws.onclose do
-        warn("Adam kapatti.")
         settings.sockets.delete(ws)
       end
     end
@@ -46,25 +44,86 @@ end
 
 __END__
 @@ index
+<!DOCTYPE html>
 <html>
-  <body>
-     <div id="msgs"></div>
-  </body>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset="UTF-8">
+  <title>Bitstamp Live 60s Candles</title>
+  <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js'></script>
 
-  <script type="text/javascript">
-    window.onload = function(){
-      (function(){
-        var show = function(el){
-          return function(msg){ el.innerHTML = msg + "<br />" + el.innerHTML; }
-        }(document.getElementById("msgs"));
+<script>
+  var ws;
+  var chart;
+    $(document).ready(function() {
+        ws = new WebSocket("ws://" + window.location.host+ window.location.pathname);
+        
+        ws.onmessage = function(m) { 
+          console.log(m.data);
+          var json= JSON.parse(m.data);
+          console.log(json);
+          chart.series[0].addPoint( json ); 
+        };
 
-        var ws       = new WebSocket("ws://" + window.location.host+ window.location.pathname);
-        ws.onopen    = function()  { show("canli bitstamp verileri"); };
-        ws.onclose   = function()  { show("soket kapandi"); }
-        ws.onmessage = function(m) { show("veri: " +  m.data); };
+        Highcharts.setOptions({
+            global: {
+                useUTC: false
+            }
+        });
 
-      })();
-    }
-  </script>
+        chart = new Highcharts.Chart({
+            chart: {
+                renderTo: 'container',
+                type: 'candlestick',
+                marginRight: 10
+            },
+            title: {
+                text: 'Live bitstamp data'
+            },
+            xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150
+            },
+            yAxis: {
+                title: {
+                    text: 'Value'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'}]
+            },
+            tooltip: {
+                formatter: function() {
+                    return '<b>' + this.series.name + '</b><br/>' + Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' + Highcharts.numberFormat(this.y, 2);
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            exporting: {
+                enabled: false
+            },
+            series: [{
+                name: 'Random data',
+                type: 'candlestick',
+                data: []
+                }]
+        });
+
+    });
+</script>
+
+
+</head>
+<body>
+<script src="http://code.highcharts.com/stock/highstock.js"></script>
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
+
+<div id="container" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+
+  
+</body>
+
+
 </html>
 
