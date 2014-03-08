@@ -8,22 +8,19 @@ set :server, "thin"
 set :bind, "0.0.0.0"
 set :sockets, []
 candle_stream1= Finance::IO::CandleStream.start(60) do |row|
-  puts "output: #{row}"
   EM.next_tick { settings.sockets.each{ |s| s.send(row.to_json) } }
 end
 set :candle_stream1, candle_stream1
-
 set :btce_client, PusherClient::Socket.new("de504dc5763aeef9ff52")
 
 live_trades= settings.btce_client.subscribe("live_trades")
 live_trades.bind("trade") do |data|
   json= JSON.parse(data)
   wut= [Time.now.to_i, json["price"], json["amount"]]
-  puts "input: #{wut}"
   settings.candle_stream1<< wut
-  # EM.next_tick { settings.sockets.each{ |s| s.send(wut.to_json) } }
 end
 
+PusherClient.logger.level= Logger::WARN
 # async connect
 settings.btce_client.connect(true)
 
