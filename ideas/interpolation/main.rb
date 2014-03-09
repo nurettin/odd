@@ -8,8 +8,8 @@ require "json/ext"
 
 candle= []
 
-CSV.foreach("BITSTAMPUSD_reverse.csv") do |row|
-  candle<< [Date.parse(row[0]).to_time.to_i, row[4].to_f]
+CSV.foreach("../data/BITSTAMPUSD_reverse.csv") do |row|
+  candle<< [Date.parse(row[0]).to_time.to_i, row[1].to_f]
 end
 
 def interpolate_next(data, range, style)
@@ -42,7 +42,7 @@ def interpolate_styles_summary(data, length)
 end
 
 def interpolate_styles_summary_ranges(candle)
-  (4..candle.count- 1).map do |length|
+  (100..candle.count- 2).map do |length|
     interpolate_styles_summary(candle, length).map do |style, data|
       puts JSON.pretty_generate(data)
       { style: style, sum_errors: data[:errors].reduce(:+)/ data[:errors].count }
